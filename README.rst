@@ -10,4 +10,4 @@ tested on any other platform.
 
 See ``examples`` directory for some usage examples.
 
-.. _Librarian:: https://github.com/Outernet-Project/librarian/
+.. _Librarian: https://github.com/Outernet-Project/librarian/
