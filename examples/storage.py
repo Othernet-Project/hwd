@@ -18,10 +18,11 @@ disks = hwd.udev.devices_by_subsystem('block',
 for d in disks:
     disk = hwd.storage.Disk(d)
     print('{} disk {}:'.format(disk.bus.upper(), disk.node))
-    print('    UUID:   {}'.format(disk.uuid))
-    print('    Table:  {}'.format(disk.part_table_type.upper()))
-    print('    Vendor: {}'.format(disk.vendor))
-    print('    Model:  {}'.format(disk.model))
+    print('    UUID:      {}'.format(disk.uuid))
+    print('    Table:     {}'.format(disk.part_table_type.upper()))
+    print('    Vendor:    {}'.format(disk.vendor))
+    print('    Model:     {}'.format(disk.model))
+    print('    Capacity:  {}'.format(humanize(disk.size)))
     print()
     for p in disk.partitions:
         print('    {num}: {lbl} {size} {ptype} partition'.format(**{
