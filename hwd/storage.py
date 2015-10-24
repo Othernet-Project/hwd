@@ -2,11 +2,6 @@ from . import udev
 from . import wrapper
 
 
-PARTITION_ID_TABLE = (
-
-)
-
-
 class Partition(wrapper.Wrapper):
     """
     Wrap pyudev Device object to provide extended information about partitions
