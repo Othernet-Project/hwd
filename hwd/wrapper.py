@@ -56,6 +56,10 @@ class Wrapper:
     def node(self):
         return self.device.device_node
 
+    @property
+    def bus(self):
+        return self.device.get('ID_BUS')
+
     def get_first(self, keys, default=None):
         """ For given keys, return value for first key that isn't none """
         d = self.device
