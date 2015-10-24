@@ -20,10 +20,6 @@ class NetIface(wrapper.Wrapper):
         return self.device.attributes.get('address')
 
     @property
-    def model(self):
-        return self.device.get('ID_MODEL_FROM_DATABASE')
-
-    @property
     def is_connected(self):
         return self.device.attributes.get('carrier') == '1'
 
@@ -44,6 +40,12 @@ class NetIface(wrapper.Wrapper):
             return {}
         return ipv6addrs[0]
 
+    def _get_default_gateway(self, ip=4):
+        net_type = netifaces.AF_INET if ip == 4 else netifaces.AF_INET6
+        gw = netifaces.gateways()['default'].get(net_type, (None, None))
+        if gw[1] == self.name:
+            return gw[0]
+
     @property
     def ipv4addr(self):
         return self._get_ipv4_addrs().get('addr')
@@ -59,3 +61,11 @@ class NetIface(wrapper.Wrapper):
     @property
     def ipv6netmask(self):
         return self._get_ipv6addrs().get('netmask')
+
+    @property
+    def ipv4gateway(self):
+        return self._get_default_gateway(4)
+
+    @property
+    def ipv6gateway(self):
+        return self._get_default_gateway(6)
