@@ -1,10 +1,14 @@
 import pyudev
 
 
-def devices_by_subsystem(subsys, only=lambda x: x):
-    """ Iterator that yields devices that belong to specified subsystem
+def devices_by_subsystem(subsys, only=lambda x: True):
+    """
+    Iterator that yields devices that belong to specified subsystem. Returned
+    values are ``pydev.Device`` instances.
 
-    This iterator yields ``pyudev.Device`` objects.
+    The ``only`` argument can be used to further filter devices. It should be
+    a function that takes a ``pyudev.Device`` object, and returns ``True`` or
+    ``False`` to indicate whether device should be returned.
 
     Example::
 
