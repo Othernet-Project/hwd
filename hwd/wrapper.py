@@ -29,3 +29,38 @@ class Wrapper:
     @property
     def system_path(self):
         return self.device.sys_path
+
+    @property
+    def devid(self):
+        d = self.device
+        vend_id = d.get('ID_VENDOR_ID')
+        model_id = d.get('ID_MODEL_ID')
+        return (vend_id, model_id)
+
+    @property
+    def model(self):
+        return self.get_first([
+            'ID_MODEL_FROM_DATABASE',
+            'ID_MODEL',
+            'ID_MODEL_ID'])
+
+    @property
+    def vendor(self):
+        return self.get_first([
+            'ID_OUI_FROM_DATABASE',
+            'ID_VENDOR_FROM_DATAASE',
+            'ID_VENDOR',
+            'ID_VENDOR_ID'])
+
+    @property
+    def node(self):
+        return self.device.device_node
+
+    def get_first(self, keys, default=None):
+        """ For given keys, return value for first key that isn't none """
+        d = self.device
+        for k in keys:
+            v = d.get(k)
+            if v:
+                return v
+        return default
