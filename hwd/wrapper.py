@@ -1,7 +1,7 @@
 import pyudev
 
 
-class Wrapper:
+class Wrapper(object):
     """ Generic wrapper class that wraps ``pyudev.Device`` class
     """
 
