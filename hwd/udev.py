@@ -1,7 +1,7 @@
 import pyudev
 
 
-def devices_by_subsystem(subsys):
+def devices_by_subsystem(subsys, only=lambda x: x):
     """ Iterator that yields devices that belong to specified subsystem
 
     This iterator yields ``pyudev.Device`` objects.
@@ -15,5 +15,7 @@ def devices_by_subsystem(subsys):
     ctx = pyudev.Context()
     for d in ctx.list_devices():
         if d.subsystem != subsys:
+            continue
+        if not only(d):
             continue
         yield d
