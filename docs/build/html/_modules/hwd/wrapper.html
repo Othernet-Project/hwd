@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hwd.wrapper &mdash; hwd 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="hwd 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for hwd.wrapper</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">pyudev</span>
+
+
+<div class="viewcode-block" id="Wrapper"><a class="viewcode-back" href="../../wrapper.html#hwd.wrapper.Wrapper">[docs]</a><span class="k">class</span> <span class="nc">Wrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic wrapper class that wraps ``pyudev.Device`` instances.</span>
+
+<span class="sd">    ``dev`` is a ``pyudev.Device`` instance. Device&#39;s ``sys_name`` property is</span>
+<span class="sd">    stored as ``name`` property on the wrapper instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">sys_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">dev</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The underlaying ``pyudev.Device`` instance can be accessed by using the</span>
+<span class="sd">        ``device`` property. This propety is cached, so only one lookup is</span>
+<span class="sd">        performed to obtain the device object. This cache is invalidated by</span>
+<span class="sd">        :py:meth:`~refresh` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># We always create a new context and look up the devices because they</span>
+        <span class="c"># may disappear or change their state between lookups.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">:</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+            <span class="n">devs</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">list_devices</span><span class="p">(</span><span class="n">sys_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">devs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&#39;Device {} no longer present in context&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span>
+
+<div class="viewcode-block" id="Wrapper.refresh"><a class="viewcode-back" href="../../wrapper.html#hwd.wrapper.Wrapper.refresh">[docs]</a>    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears the :py:attr:`~device` cache.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This method does not cause immediate lookup of the udev context.</span>
+<span class="sd">            Lookup is done when the :py:attr:`~device`</span>
+<span class="sd">            property is accessed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">system_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        System path of the device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">sys_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">devid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Two-tuple containing device&#39;s vendor ID and model ID (hex).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">vend_id</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ID_VENDOR_ID&#39;</span><span class="p">)</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ID_MODEL_ID&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vend_id</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        First non-empty value from the following list:</span>
+
+<span class="sd">        - model name from model database</span>
+<span class="sd">        - model name as reported by the device driver</span>
+<span class="sd">        - model ID (hex)</span>
+
+<span class="sd">        If none of the above attributes are available, evaluates to ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_first</span><span class="p">([</span>
+            <span class="s">&#39;ID_MODEL_FROM_DATABASE&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ID_MODEL&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ID_MODEL_ID&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vendor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        First non-empty value from the following list:</span>
+
+<span class="sd">        - organization name (OUI) from device database</span>
+<span class="sd">        - vendor from vendor database</span>
+<span class="sd">        - vendor as reported by the device driver</span>
+<span class="sd">        - vendor ID (hex)</span>
+
+<span class="sd">        If none of the above attributes are available, evaluates to ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_first</span><span class="p">([</span>
+            <span class="s">&#39;ID_OUI_FROM_DATABASE&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ID_VENDOR_FROM_DATABASE&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ID_VENDOR&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ID_VENDOR_ID&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Device node. Not all devices have a node. In case a device has no node,</span>
+<span class="sd">        this property evaluates to ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">device_node</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Device&#39;s bus. If device is not on any bus, this property evaluates to</span>
+<span class="sd">        ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ID_BUS&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For given keys, return value for first key that isn&#39;t ``None``. If such</span>
+<span class="sd">        a key is not found, ``default`` is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">default</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Outernet Inc <apps@outernet.is>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

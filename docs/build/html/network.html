@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Network device wrappers &mdash; hwd 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="hwd 0.1 documentation" href="index.html" />
+    <link rel="next" title="Storage device wrappers" href="storage.html" />
+    <link rel="prev" title="Base wrapper class" href="wrapper.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-hwd.network">
+<span id="network-device-wrappers"></span><h1>Network device wrappers<a class="headerlink" href="#module-hwd.network" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="hwd.network.NetIface">
+<em class="property">class </em><code class="descclassname">hwd.network.</code><code class="descname">NetIface</code><span class="sig-paren">(</span><em>dev</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hwd/network.html#NetIface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hwd.network.NetIface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <code class="docutils literal"><span class="pre">pyudev.Device</span></code> objects of &#8216;net&#8217; subclass.</p>
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv4addr">
+<code class="descname">ipv4addr</code><a class="headerlink" href="#hwd.network.NetIface.ipv4addr" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv4 address.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv4gateway">
+<code class="descname">ipv4gateway</code><a class="headerlink" href="#hwd.network.NetIface.ipv4gateway" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv4 default gateway.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv4netmask">
+<code class="descname">ipv4netmask</code><a class="headerlink" href="#hwd.network.NetIface.ipv4netmask" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv4 netmask.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv6addr">
+<code class="descname">ipv6addr</code><a class="headerlink" href="#hwd.network.NetIface.ipv6addr" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv6 address.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv6gateway">
+<code class="descname">ipv6gateway</code><a class="headerlink" href="#hwd.network.NetIface.ipv6gateway" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv6 default gateway.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.ipv6netmask">
+<code class="descname">ipv6netmask</code><a class="headerlink" href="#hwd.network.NetIface.ipv6netmask" title="Permalink to this definition">¶</a></dt>
+<dd><p>IPv6 netmask.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.is_connected">
+<code class="descname">is_connected</code><a class="headerlink" href="#hwd.network.NetIface.is_connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether there is carrier.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.mac">
+<code class="descname">mac</code><a class="headerlink" href="#hwd.network.NetIface.mac" title="Permalink to this definition">¶</a></dt>
+<dd><p>NIC&#8217;s MAC address.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.network.NetIface.type">
+<code class="descname">type</code><a class="headerlink" href="#hwd.network.NetIface.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>NIC type. Not all network devices have this value. For wireless devices
+this value is <code class="docutils literal"><span class="pre">'wlan'</span></code>, and for loopback devices, the value is
+<code class="docutils literal"><span class="pre">'loop'</span></code>. When the value is missing, <code class="docutils literal"><span class="pre">'eth'</span></code> is returned as most
+ethernet devices authors have encountered have this value missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="wrapper.html" title="previous chapter">Base wrapper class</a></li>
+      <li>Next: <a href="storage.html" title="next chapter">Storage device wrappers</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/network.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Outernet Inc <apps@outernet.is>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/network.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

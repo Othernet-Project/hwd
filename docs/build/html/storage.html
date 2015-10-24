@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Storage device wrappers &mdash; hwd 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="hwd 0.1 documentation" href="index.html" />
+    <link rel="next" title="udev helpers" href="udev.html" />
+    <link rel="prev" title="Network device wrappers" href="network.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-hwd.storage">
+<span id="storage-device-wrappers"></span><h1>Storage device wrappers<a class="headerlink" href="#module-hwd.storage" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="hwd.storage.Disk">
+<em class="property">class </em><code class="descclassname">hwd.storage.</code><code class="descname">Disk</code><span class="sig-paren">(</span><em>dev</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hwd/storage.html#Disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hwd.storage.Disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <code class="docutils literal"><span class="pre">pyudev.Device</span></code> objects of &#8216;disk&#8217; type.</p>
+<dl class="attribute">
+<dt id="hwd.storage.Disk.is_read_only">
+<code class="descname">is_read_only</code><a class="headerlink" href="#hwd.storage.Disk.is_read_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether disk is read-only. This evaluates to <code class="docutils literal"><span class="pre">True</span></code> if disk is
+read-only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.is_removable">
+<code class="descname">is_removable</code><a class="headerlink" href="#hwd.storage.Disk.is_removable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether disk is removable. This property evaluates to <code class="docutils literal"><span class="pre">True</span></code> if disk
+is removable. Note that this does not mean disk is USB-attached, and
+does not necessarily match the common notion of removable devices.</p>
+<p>If you wish to know whether a device is USB-attached, check whether
+the value of the <a class="reference internal" href="wrapper.html#hwd.wrapper.Wrapper.bus" title="hwd.wrapper.Wrapper.bus"><code class="xref py py-attr docutils literal"><span class="pre">bus</span></code></a> property is
+<code class="docutils literal"><span class="pre">'usb'</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.part_table_type">
+<code class="descname">part_table_type</code><a class="headerlink" href="#hwd.storage.Disk.part_table_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition table type. Evaluates to either <code class="docutils literal"><span class="pre">'dos'</span></code> or <code class="docutils literal"><span class="pre">'gpt'</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.partitions">
+<code class="descname">partitions</code><a class="headerlink" href="#hwd.storage.Disk.partitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterable containing disk&#8217;s partition objects. Objects in the iterable
+are <a class="reference internal" href="#hwd.storage.Partition" title="hwd.storage.Partition"><code class="xref py py-class docutils literal"><span class="pre">Partition</span></code></a> instances.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.sectors">
+<code class="descname">sectors</code><a class="headerlink" href="#hwd.storage.Disk.sectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disk size in sectors. If for some reason, this information is not
+available, this property evaluates to <code class="docutils literal"><span class="pre">-1</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.size">
+<code class="descname">size</code><a class="headerlink" href="#hwd.storage.Disk.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disk capacity in bytes. This value is obtained by multiplying sector
+size by 512.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Disk.uuid">
+<code class="descname">uuid</code><a class="headerlink" href="#hwd.storage.Disk.uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition table UUID. Note that UUIDs for different partition table
+types have different fomats.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hwd.storage.Partition">
+<em class="property">class </em><code class="descclassname">hwd.storage.</code><code class="descname">Partition</code><span class="sig-paren">(</span><em>dev</em>, <em>disk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hwd/storage.html#Partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hwd.storage.Partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <code class="docutils literal"><span class="pre">pyudev.Device</span></code> objects of &#8216;partition&#8217; type.</p>
+<p>As with all wrappers, this class takes <code class="docutils literal"><span class="pre">dev</span></code> as its first argument.  The
+optional <code class="docutils literal"><span class="pre">disk</span></code> argument can be passed, and is stored as the <code class="docutils literal"><span class="pre">disk</span></code>
+property. This is mostly used by <a class="reference internal" href="#hwd.storage.Disk" title="hwd.storage.Disk"><code class="xref py py-class docutils literal"><span class="pre">Disk</span></code></a> class to
+maintain a refrence to itself.</p>
+<dl class="attribute">
+<dt id="hwd.storage.Partition.label">
+<code class="descname">label</code><a class="headerlink" href="#hwd.storage.Partition.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume label. This property evaluates to <code class="docutils literal"><span class="pre">None</span></code> if no volume label is
+set on a partition.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.number">
+<code class="descname">number</code><a class="headerlink" href="#hwd.storage.Partition.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition number. This specifies a position of the partition in the
+partition table. If the value is not known for some reason, this
+property evaluates to <code class="docutils literal"><span class="pre">-1</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.offset">
+<code class="descname">offset</code><a class="headerlink" href="#hwd.storage.Partition.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition offset in sectors. If this information is not available for
+some reason, it evaluates to <code class="docutils literal"><span class="pre">-1</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.part_id">
+<code class="descname">part_id</code><a class="headerlink" href="#hwd.storage.Partition.part_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition type ID. This is expressed in hex string. Note that this is
+not the same as filesystem type which is available through the
+<a class="reference internal" href="#hwd.storage.Partition.part_type" title="hwd.storage.Partition.part_type"><code class="xref py py-attr docutils literal"><span class="pre">part_type</span></code></a> property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.part_type">
+<code class="descname">part_type</code><a class="headerlink" href="#hwd.storage.Partition.part_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fiesystem type. This evaluates to any number of supported file system
+types such as <code class="docutils literal"><span class="pre">'ext4'</span></code> or <code class="docutils literal"><span class="pre">'vfat'</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.scheme">
+<code class="descname">scheme</code><a class="headerlink" href="#hwd.storage.Partition.scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition entry scheme. This evaluates to either <code class="docutils literal"><span class="pre">'dos'</span></code> or
+<code class="docutils literal"><span class="pre">'gpt'</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.sectors">
+<code class="descname">sectors</code><a class="headerlink" href="#hwd.storage.Partition.sectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition size in sectors. If this information is not available for
+some reason, it evaluates to <code class="docutils literal"><span class="pre">-1</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.size">
+<code class="descname">size</code><a class="headerlink" href="#hwd.storage.Partition.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition size in bytes. This value is obtained by multiplying the
+sector size by 512.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.usage">
+<code class="descname">usage</code><a class="headerlink" href="#hwd.storage.Partition.usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filesystem usage (purpose). In most cases this should evaluate to
+<code class="docutils literal"><span class="pre">'filesystem'</span></code>. In some cases (e.g., swap partition), it may evaluate
+to <code class="docutils literal"><span class="pre">'other'</span></code> or some other value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hwd.storage.Partition.uuid">
+<code class="descname">uuid</code><a class="headerlink" href="#hwd.storage.Partition.uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filesystem UUID. Note that this is not the same as the partition UUID
+(which is not available through this wrapper, other than directly
+accessing the underlying <code class="docutils literal"><span class="pre">pyudev.Device</span></code> object).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="network.html" title="previous chapter">Network device wrappers</a></li>
+      <li>Next: <a href="udev.html" title="next chapter">udev helpers</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/storage.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Outernet Inc <apps@outernet.is>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/storage.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
