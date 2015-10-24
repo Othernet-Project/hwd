@@ -6,15 +6,14 @@ SECTOR_SIZE = 512
 class Partition(wrapper.Wrapper):
     """
     Wrapper for ``pyudev.Device`` objects of 'partition' type.
+
+    As with all wrappers, this class takes ``dev`` as its first argument.  The
+    optional ``disk`` argument can be passed, and is stored as the ``disk``
+    property. This is mostly used by :py:class:`~hwd.storage.Disk` class to
+    maintain a refrence to itself.
     """
 
     def __init__(self, dev, disk=None):
-        """
-        As with all wrappers, this class takes ``dev`` as its first argument.
-        The optional ``disk`` argument can be passed, and is stored as the
-        ``disk`` property. This is mostly used by :py:class:`~hwd.storage.Disk`
-        class to maintain a refrence to itself.
-        """
         self.disk = disk
         super(Partition, self).__init__(dev)
 
@@ -66,7 +65,7 @@ class Partition(wrapper.Wrapper):
         """
         Partition type ID. This is expressed in hex string. Note that this is
         not the same as filesystem type which is available through the
-        :py:attribute:`~hwd.storage.Partition.part_type` property.
+        :py:attr:`~part_type` property.
         """
         return self.device.get('ID_PART_ENTRY_TYPE')
 
@@ -138,7 +137,7 @@ class Disk(wrapper.Wrapper):
         """
         return self.device.get('ID_PART_TABLE_UUID')
 
-    @poperty
+    @property
     def sectors(self):
         """
         Disk size in sectors. If for some reason, this information is not
@@ -170,7 +169,7 @@ class Disk(wrapper.Wrapper):
         does not necessarily match the common notion of removable devices.
 
         If you wish to know whether a device is USB-attached, check whether
-        the value of the :py:attribute:`~hwd.wrapper.Wrapper.bus` property is
+        the value of the :py:attr:`~hwd.wrapper.Wrapper.bus` property is
         ``'usb'``.
         """
         return self.device.attributes.get('removable') == '1'

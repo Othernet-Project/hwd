@@ -4,13 +4,12 @@ import pyudev
 class Wrapper(object):
     """
     Generic wrapper class that wraps ``pyudev.Device`` instances.
+
+    ``dev`` is a ``pyudev.Device`` instance. Device's ``sys_name`` property is
+    stored as ``name`` property on the wrapper instance.
     """
 
     def __init__(self, dev):
-        """
-        ``dev`` is a ``pyudev.Device`` instance. Device's ``sys_name`` property
-        is stored as ``name`` property on the wrapper instance.
-        """
         self.name = dev.sys_name
         self._device = dev
 
@@ -20,7 +19,7 @@ class Wrapper(object):
         The underlaying ``pyudev.Device`` instance can be accessed by using the
         ``device`` property. This propety is cached, so only one lookup is
         performed to obtain the device object. This cache is invalidated by
-        :py:method:`~hwd.wrapper.Wrapper.refresh` method.
+        :py:meth:`~refresh` method.
         """
         # We always create a new context and look up the devices because they
         # may disappear or change their state between lookups.
@@ -36,11 +35,11 @@ class Wrapper(object):
 
     def refresh(self):
         """
-        Clears the :py:attribute:`~hwd.wrapper.Wrapper.device` cache.
+        Clears the :py:attr:`~device` cache.
 
         .. note::
             This method does not cause immediate lookup of the udev context.
-            Lookup is done when the :py:attribute:`~hwd.wrapper.Wrapper.device`
+            Lookup is done when the :py:attr:`~device`
             property is accessed.
         """
         self._device = None
