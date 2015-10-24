@@ -7,7 +7,7 @@ class Wrapper:
 
     def __init__(self, dev):
         self.name = dev.sys_name
-        self._device = None
+        self._device = dev
 
     @property
     def device(self):
@@ -22,6 +22,9 @@ class Wrapper:
                 raise ValueError(
                     'Device {} no longer present in context'.format(self.name))
         return self._device
+
+    def refresh(self):
+        self._device = None
 
     @property
     def system_path(self):
