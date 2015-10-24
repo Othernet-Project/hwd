@@ -30,7 +30,7 @@ class Partition(wrapper.Wrapper):
     def label(self):
         """
         Volume label. This property evaluates to ``None`` if no volume label is
-        set on a partition.
+        not set on a partition.
         """
         return self.device.get('ID_FS_LABEL')
 
