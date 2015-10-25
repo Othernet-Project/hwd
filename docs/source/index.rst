@@ -26,7 +26,7 @@ Basic usage
 -----------
 
 To use the wrapper classes, you need ``pyudev.Device`` objects. You can obtain
-them using pyudev API, or using the :py:func:`~hwd.udev.devices_by_subclass`
+them using pyudev API, or using the :py:func:`~hwd.udev.devices_by_subsystem`
 helper function.
 
 Once you have one or more ``Device`` objects, you can instantiate the wrapper
