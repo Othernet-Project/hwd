@@ -61,7 +61,7 @@ class Partition(wrapper.Wrapper):
         return self.device.get('ID_PART_ENTRY_SCHEME')
 
     @property
-    def part_id(self):
+    def part_type(self):
         """
         Partition type ID. This is expressed in hex string. Note that this is
         not the same as filesystem type which is available through the
@@ -70,10 +70,13 @@ class Partition(wrapper.Wrapper):
         return self.device.get('ID_PART_ENTRY_TYPE')
 
     @property
-    def part_type(self):
+    def format(self):
         """
         Fiesystem type. This evaluates to any number of supported file system
         types such as ``'ext4'`` or ``'vfat'``.
+
+        .. note::
+            Extended partitions will have this property evaluate to ``None``.
         """
         return self.device.get('ID_FS_TYPE')
 

@@ -29,7 +29,7 @@ for d in disks:
             'num': p.number,
             'lbl': p.label or '(no label)',
             'size': humanize(p.size),
-            'ptype': p.part_type
+            'ptype': p.format
         }))
         print('       {}'.format(p.uuid))
     print()
