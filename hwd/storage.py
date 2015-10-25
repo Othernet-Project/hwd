@@ -81,6 +81,13 @@ class Partition(wrapper.Wrapper):
         return self.device.get('ID_FS_TYPE')
 
     @property
+    def is_extended(self):
+        """
+        Whether partition is extended.
+        """
+        return self.part_type == '0x5'
+
+    @property
     def offset(self):
         """
         Partition offset in sectors. If this information is not available for
