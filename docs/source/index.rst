@@ -13,6 +13,25 @@ integration of hardware management functionality into `Librarian
 receives. As such, there are no plans for adding support for devices that are
 common on personal computers.
 
+Installing
+----------
+
+hwd is in early development, and is therefore not yet published on a PyPI
+repository. To install the latest development version from GitHub, use this
+command::
+
+    pip install https://github.com/Outernet-Project/hwd/archive/develop.zip
+
+Basic usage
+-----------
+
+To use the wrapper classes, you need ``pyudev.Device`` objects. You can obtain
+them using pyudev API, or using the :py:func:`~hwd.udev.device_by_subclass`
+helper function.
+
+Once you have one or more ``Device`` objects, you can instantiate the wrapper
+classes, passing the ``Device`` object to the constructor.
+
 API documentation
 -----------------
 
