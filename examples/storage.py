@@ -25,11 +25,14 @@ for d in disks:
     print('    Capacity:  {}'.format(humanize(disk.size)))
     print()
     for p in disk.partitions:
-        print('    {num}: {lbl} {size} {ptype} partition'.format(**{
+        if p.is_extended:
+            continue
+        print(' {logic}{num}: {size} {ptype} {lbl}'.format(**{
             'num': p.number,
+            'logic': 'L ' if p.number > 4 else '  ',
             'lbl': p.label or '(no label)',
             'size': humanize(p.size),
-            'ptype': p.format
+            'ptype': p.format,
         }))
         print('       {}'.format(p.uuid))
     print()
