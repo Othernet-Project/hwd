@@ -34,5 +34,6 @@ for d in disks:
             'size': humanize(p.size),
             'ptype': p.format,
         }))
-        print('       {}'.format(p.uuid))
+        print('      {}'.format(p.uuid))
+        print('      mounts: {}'.format(', '.join(p.mount_points) or 'none'))
     print()
