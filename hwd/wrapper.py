@@ -123,3 +123,14 @@ class Wrapper(object):
             if not v is None:
                 return v
         return default
+
+    @property
+    def aliases(self):
+        """
+        Return a list of device aliases (symlinks) that match this device. This
+        list also includes the device node so it can be treated as a list of
+        all filesystem objects that point to this device.
+        """
+        links = list(self.device.device_links)
+        links.insert(0, self.node)
+        return links
