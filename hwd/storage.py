@@ -1,3 +1,6 @@
+from __future__ import division
+
+import os
 from collections import namedtuple
 
 from . import udev
@@ -9,6 +12,9 @@ SECTOR_SIZE = 512
 #: namedtuple representing a single mtab entry
 MtabEntry = namedtuple('MtabEntry', ['dev', 'mdir', 'fstype', 'opts', 'cfreq',
                                      'cpass'])
+
+#: namedtuple representing filesystem usage statistics
+Fstat = namedtuple('Fstat', ['total', 'used', 'free', 'pct_used', 'pct_free'])
 
 
 def mounts():
@@ -141,6 +147,26 @@ class Partition(wrapper.Wrapper):
             return [e.mdir for e in mounts() if e.dev in aliases]
         except (OSError, IOError):
             return []
+
+    @property
+    def stat(self):
+        """
+        Return disk usage information for the partition in :py:class:`Fstat`
+        format. If disk usage information is not available, then ``None`` is
+        returned. Disk usage information is only available for regular
+        filesystems that are mounted.
+        """
+        try:
+            mp = self.mount_points[0]
+        except IndexError:
+            return None
+        stat = os.statvfs(mp)
+        free = stat.f_frsize * stat.f_bavail
+        total = self.size
+        used = total - free
+        used_pct = round(used / total * 100)
+        free_pct = 100 - used_pct
+        return Fstat(total, used, free, used_pct, free_pct)
 
 
 class Disk(wrapper.Wrapper):

@@ -36,4 +36,11 @@ for d in disks:
         }))
         print('      {}'.format(p.uuid))
         print('      mounts: {}'.format(', '.join(p.mount_points) or 'none'))
+        stat = p.stat
+        if stat:
+            print('      usage: {} used of {} ({} free)'.format(
+                humanize(stat.used), humanize(stat.total),
+                humanize(stat.free)))
+        else:
+            print('      usage: n/a')
     print()
