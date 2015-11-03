@@ -8,24 +8,6 @@ class Wrapper(object):
     ``dev`` is a ``pyudev.Device`` instance. Device's ``sys_name`` property is
     stored as ``name`` property on the wrapper instance.
 
-    Example::
-
-        >>> devs = list(udev.devices_by_subsystem('net'))
-        >>> device = wrapper.Wrapper(devs[0])
-        >>> device.bus
-        u'pci'
-        >>> device.model
-        u'Wireless 7260 (Dual Band Wireless-AC 7260)'
-        >>> device.name
-        u'wlp2s0'
-        >>> device.vendor
-        u'Intel Corporate'
-        >>> device.system_path
-        u'/sys/devices/pci0000:00/0000:00:1c.3/0000:02:00.0/net/wlp2s0'
-        >>> device.devid
-        (u'0x8086', u'0x08b1')
-        >>>
-
     """
 
     def __init__(self, dev):
