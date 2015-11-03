@@ -1,7 +1,25 @@
+from collections import namedtuple
+
 from . import udev
 from . import wrapper
 
 SECTOR_SIZE = 512
+
+
+#: namedtuple representing a single mtab entry
+MtabEntry = namedtuple('MtabEntry', ['dev', 'mdir', 'fstype', 'opts', 'cfreq',
+                                     'cpass'])
+
+
+def mounts():
+    """
+    Iterator yielding mount points that appear in /proc/mounts. If /proc/mounts
+    is not readable or does not exist, this function raises an exception.
+    """
+    with open('/proc/mounts', 'r') as fd:
+        for l in fd:
+            yield MtabEntry(*l.strip().split())
+
 
 class Partition(wrapper.Wrapper):
     """
@@ -111,6 +129,19 @@ class Partition(wrapper.Wrapper):
         """
         return self.sectors * SECTOR_SIZE
 
+    @property
+    def mount_points(self):
+        """
+        Iterator of partition's mount points obtained by reading /proc/mounts.
+        Returns empty list if /proc/mounts is not readable or if there are no
+        mount points.
+        """
+        aliases = self.aliases
+        try:
+            return [e.mdir for e in mounts() if e.dev in aliases]
+        except (OSError, IOError):
+            return []
+
 
 class Disk(wrapper.Wrapper):
     """
@@ -183,4 +214,3 @@ class Disk(wrapper.Wrapper):
         ``'usb'``.
         """
         return self.device.attributes.get('removable') == '1'
-
