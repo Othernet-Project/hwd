@@ -297,7 +297,7 @@ class UbiContainer(wrapper.Wrapper):
     is_removable = False
 
 
-def UbiVolume(PartitionBase):
+class UbiVolume(PartitionBase):
     """
     Wrapper for ``pyudev.Device`` objects of the 'ubi' subsytem.
 
