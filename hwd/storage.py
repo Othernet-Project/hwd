@@ -75,7 +75,102 @@ class Mountable(object):
         return Fstat(total, used, free, used_pct, free_pct)
 
 
-class Partition(Mountable, wrapper.Wrapper):
+class PartitionBase(Mountable, wrapper.Wrapper):
+    """
+    Base class for all partition devices. This class encapsulates the base
+    functionality for all mountable partitions. It takes ``disk`` as an
+    optional argument, and allows access to parent device from the partition
+    devices.
+    """
+
+    parent_class = None
+
+    def __init__(self, dev, disk=None):
+        self._disk = disk
+        super(PartitionBase, self).__init__(dev)
+
+    @property
+    def disk(self):
+        if not self._disk:
+            self._disk = self.parent_class(self.device.parent)
+        return self._disk
+
+
+class Disk(wrapper.Wrapper):
+    """
+    Wrapper for ``pyudev.Device`` objects of 'disk' type.
+    """
+
+    def __init__(self, dev):
+        super(Disk, self).__init__(dev)
+        self._partitions = None
+
+    @property
+    def partitions(self):
+        """
+        Iterable containing disk's partition objects. Objects in the iterable
+        are :py:class:`~hwd.storage.Partition` instances.
+        """
+        if not self._partitions:
+            self._partitions = [Partition(d, self)
+                                for d in self.device.children]
+        return self._partitions
+
+    @property
+    def part_table_type(self):
+        """
+        Partition table type. Evaluates to either ``'dos'`` or ``'gpt'``.
+        """
+        return self.device.get('ID_PART_TABLE_TYPE')
+
+    @property
+    def uuid(self):
+        """
+        Partition table UUID. Note that UUIDs for different partition table
+        types have different fomats.
+        """
+        return self.device.get('ID_PART_TABLE_UUID')
+
+    @property
+    def sectors(self):
+        """
+        Disk size in sectors. If for some reason, this information is not
+        available, this property evaluates to ``-1``.
+        """
+        return int(self.device.attributes.get('size', -1))
+
+    @property
+    def size(self):
+        """
+        Disk capacity in bytes. This value is obtained by multiplying sector
+        size by 512.
+        """
+        return self.sectors * SECTOR_SIZE
+
+    @property
+    def is_read_only(self):
+        """
+        Whether disk is read-only. This evaluates to ``True`` if disk is
+        read-only.
+        """
+        return self.device.attributes.get('ro') == '1'
+
+    @property
+    def is_removable(self):
+        """
+        Whether disk is removable. This property evaluates to ``True`` if disk
+        is removable. Note that this does not mean disk is USB-attached, and
+        does not necessarily match the common notion of removable devices.
+
+        If you wish to know whether a device is USB-attached, check whether
+        the value of the :py:attr:`~hwd.wrapper.Wrapper.bus` property is
+        ``'usb'``.
+        """
+        return self.device.attributes.get('removable') == '1'
+
+
+
+class Partition(PartitionBase):
     """
     Wrapper for ``pyudev.Device`` objects of 'partition' type.
 
@@ -85,9 +180,7 @@ class Partition(Mountable, wrapper.Wrapper):
     maintain a refrence to itself.
     """
 
-    def __init__(self, dev, disk=None):
-        self.disk = disk
-        super(Partition, self).__init__(dev)
+    parent_class = Disk
 
     @property
     def number(self):
@@ -184,80 +277,27 @@ class Partition(Mountable, wrapper.Wrapper):
         return self.sectors * SECTOR_SIZE
 
 
-class Disk(wrapper.Wrapper):
+class UbiContainer(wrapper.Wrapper):
     """
-    Wrapper for ``pyudev.Device`` objects of 'disk' type.
+    Wrapper for ``pyudev.Device`` objects of the 'ubi' subsytem.
+
+    The 'ubi' subsystem has two types of devices. The parent devices serve as
+    containers for the actual volumes. This class is meant to be used by
+    containers, rather than volumes.
+
+    This class mainly exists to facilitate the :py:class:`~PartitionBase` API,
+    specifically the API that allows access to parent device.
     """
-
-    def __init__(self, dev):
-        super(Disk, self).__init__(dev)
-        self._partitions = None
-
-    @property
-    def partitions(self):
-        """
-        Iterable containing disk's partition objects. Objects in the iterable
-        are :py:class:`~hwd.storage.Partition` instances.
-        """
-        if not self._partitions:
-            self._partitions = [Partition(d, self)
-                                for d in self.device.children]
-        return self._partitions
-
-    @property
-    def part_table_type(self):
-        """
-        Partition table type. Evaluates to either ``'dos'`` or ``'gpt'``.
-        """
-        return self.device.get('ID_PART_TABLE_TYPE')
-
-    @property
-    def uuid(self):
-        """
-        Partition table UUID. Note that UUIDs for different partition table
-        types have different fomats.
-        """
-        return self.device.get('ID_PART_TABLE_UUID')
-
-    @property
-    def sectors(self):
-        """
-        Disk size in sectors. If for some reason, this information is not
-        available, this property evaluates to ``-1``.
-        """
-        return int(self.device.attributes.get('size', -1))
-
-    @property
-    def size(self):
-        """
-        Disk capacity in bytes. This value is obtained by multiplying sector
-        size by 512.
-        """
-        return self.sectors * SECTOR_SIZE
-
-    @property
-    def is_read_only(self):
-        """
-        Whether disk is read-only. This evaluates to ``True`` if disk is
-        read-only.
-        """
-        return self.device.attributes.get('ro') == '1'
-
-    @property
-    def is_removable(self):
-        """
-        Whether disk is removable. This property evaluates to ``True`` if disk
-        is removable. Note that this does not mean disk is USB-attached, and
-        does not necessarily match the common notion of removable devices.
-
-        If you wish to know whether a device is USB-attached, check whether
-        the value of the :py:attr:`~hwd.wrapper.Wrapper.bus` property is
-        ``'usb'``.
-        """
-        return self.device.attributes.get('removable') == '1'
+    uuid = None
+    part_table_type = 'ubi'
+    partitions = []  # TODO: Point to volumes
+    sectors = -1
+    size = -1
+    is_read_only = False
+    is_removable = False
 
 
-def UbiVolume(Mountable, wrapper.Wrapper):
+def UbiVolume(PartitionBase):
     """
     Wrapper for ``pyudev.Device`` objects of the 'ubi' subsytem.
 
@@ -266,6 +306,7 @@ def UbiVolume(Mountable, wrapper.Wrapper):
     volumes, rather than their parent devices.
     """
 
+    parent_class = UbiContainer
     usage = 'filesystem'
     scheme = 'ubi'
     format = 'ubi'
@@ -280,7 +321,8 @@ def UbiVolume(Mountable, wrapper.Wrapper):
         plus the ``'ubi${INDEX}:${LABEL}'`` string. The latter is used to
         identify the device in /proc/mounts table, and is not really an alias.
         """
-        return ['ubi{}:{}'.format(TODO_PARENT_INDEX, self.label), self.node]
+        return ['ubi{}:{}'.format(self.device.parent.sys_number, self.label),
+                self.node]
 
     @property
     def sectors(self):
