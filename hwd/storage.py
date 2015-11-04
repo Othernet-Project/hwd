@@ -351,4 +351,4 @@ class UbiVolume(PartitionBase):
         Volume capacity in bytes. This property evaluates to -1 if size
         information is not available for any reason.
         """
-        return int(self.get_attrib('ubi_data_bytes', -1))
+        return int(self.get_attrib('data_bytes', -1))
