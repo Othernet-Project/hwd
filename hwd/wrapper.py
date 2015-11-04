@@ -34,6 +34,12 @@ class Wrapper(object):
                     'Device {} no longer present in context'.format(self.name))
         return self._device
 
+    def get_attrib(self, name, default=None):
+        try:
+            return self.device.attributes[name]
+        except KeyError:
+            return default
+
     def refresh(self):
         """
         Clears the :py:attr:`~device` cache.
