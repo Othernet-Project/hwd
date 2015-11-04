@@ -27,7 +27,55 @@ def mounts():
             yield MtabEntry(*l.strip().split())
 
 
-class Partition(wrapper.Wrapper):
+class Mountable(object):
+    """
+    Mixing providing interfaces for mountable storage devices.
+    """
+
+    @property
+    def size(self):
+        """
+        Subclasses using this mixin must implement their own size property
+        which returns the total capacity in bytes.
+        """
+        raise NotImplementedError('Subclasses must implement the size '
+                                  'property')
+
+    @property
+    def mount_points(self):
+        """
+        Iterator of partition's mount points obtained by reading /proc/mounts.
+        Returns empty list if /proc/mounts is not readable or if there are no
+        mount points.
+        """
+        aliases = self.aliases
+        try:
+            return [e.mdir for e in mounts() if e.dev in aliases]
+        except (OSError, IOError):
+            return []
+
+    @property
+    def stat(self):
+        """
+        Return disk usage information for the partition in :py:class:`Fstat`
+        format. If disk usage information is not available, then ``None`` is
+        returned. Disk usage information is only available for regular
+        filesystems that are mounted.
+        """
+        try:
+            mp = self.mount_points[0]
+        except IndexError:
+            return None
+        stat = os.statvfs(mp)
+        free = stat.f_frsize * stat.f_bavail
+        total = self.size
+        used = total - free
+        used_pct = round(used / total * 100)
+        free_pct = 100 - used_pct
+        return Fstat(total, used, free, used_pct, free_pct)
+
+
+class Partition(Mountable, wrapper.Wrapper):
     """
     Wrapper for ``pyudev.Device`` objects of 'partition' type.
 
@@ -135,39 +183,6 @@ class Partition(wrapper.Wrapper):
         """
         return self.sectors * SECTOR_SIZE
 
-    @property
-    def mount_points(self):
-        """
-        Iterator of partition's mount points obtained by reading /proc/mounts.
-        Returns empty list if /proc/mounts is not readable or if there are no
-        mount points.
-        """
-        aliases = self.aliases
-        try:
-            return [e.mdir for e in mounts() if e.dev in aliases]
-        except (OSError, IOError):
-            return []
-
-    @property
-    def stat(self):
-        """
-        Return disk usage information for the partition in :py:class:`Fstat`
-        format. If disk usage information is not available, then ``None`` is
-        returned. Disk usage information is only available for regular
-        filesystems that are mounted.
-        """
-        try:
-            mp = self.mount_points[0]
-        except IndexError:
-            return None
-        stat = os.statvfs(mp)
-        free = stat.f_frsize * stat.f_bavail
-        total = self.size
-        used = total - free
-        used_pct = round(used / total * 100)
-        free_pct = 100 - used_pct
-        return Fstat(total, used, free, used_pct, free_pct)
-
 
 class Disk(wrapper.Wrapper):
     """
@@ -240,3 +255,58 @@ class Disk(wrapper.Wrapper):
         ``'usb'``.
         """
         return self.device.attributes.get('removable') == '1'
+
+
+def UbiVolume(Mountable, wrapper.Wrapper):
+    """
+    Wrapper for ``pyudev.Device`` objects of the 'ubi' subsytem.
+
+    The 'ubi' subsystem has two types of devices. The parent devices serve as
+    containers for the actual volumes. This class is meant to be used by
+    volumes, rather than their parent devices.
+    """
+
+    usage = 'filesystem'
+    scheme = 'ubi'
+    format = 'ubi'
+    part_type = '0x83'
+    is_extended = False
+    offset = 0
+
+    @property
+    def aliases(self):
+        """
+        Aliases for UBI volume. This propery evaluates to device node itself
+        plus the ``'ubi${INDEX}:${LABEL}'`` string. The latter is used to
+        identify the device in /proc/mounts table, and is not really an alias.
+        """
+        return ['ubi{}:{}'.format(TODO_PARENT_INDEX, self.label), self.node]
+
+    @property
+    def sectors(self):
+        """
+        Simulated number of sectors derived from volume size. This property is
+        provided for compatibility with :py:class:`~Partition` API.
+
+        .. warning::
+            The concept does not really apply to UBI volumes, so it's best to
+            not rely on the value of this property.
+
+        """
+        return self.size / 512
+
+    @property
+    def label(self):
+        """
+        UBI volume name. For compatibility with :py:class:`~Partition` API, we
+        name this property 'label'.
+        """
+        return self.get_attrib('name')
+
+    @property
+    def size(self):
+        """
+        Volume capacity in bytes. This property evaluates to -1 if size
+        information is not available for any reason.
+        """
+        return int(self.get_attrib('ubi_data_bytes', -1))
