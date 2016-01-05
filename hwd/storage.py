@@ -68,7 +68,7 @@ class Mountable(object):
             return None
         stat = os.statvfs(mp)
         free = stat.f_frsize * stat.f_bavail
-        total = self.size
+        total = stat.f_frsize * stat.f_blocks
         used = total - free
         used_pct = round(used / total * 100)
         free_pct = 100 - used_pct
