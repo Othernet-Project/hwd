@@ -63,7 +63,10 @@ class Mountable(object):
         filesystems that are mounted.
         """
         try:
-            mp = self.mount_points[0]
+            # Always use the last mount point because it's a very common
+            # situation when mount points are moved, or sotorage is
+            # double-mounted. Last mount point is always the newest.
+            mp = self.mount_points[-1]
         except IndexError:
             return None
         stat = os.statvfs(mp)
