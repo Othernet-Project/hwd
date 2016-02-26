@@ -94,6 +94,8 @@ class PartitionBase(Mountable, wrapper.Wrapper):
 
     @property
     def disk(self):
+        if not self.parent_class or not self.device.parent:
+            return
         if not self._disk:
             self._disk = self.parent_class(self.device.parent)
         return self._disk
