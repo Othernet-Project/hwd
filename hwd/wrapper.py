@@ -35,10 +35,7 @@ class Wrapper(object):
         return self._device
 
     def get_attrib(self, name, default=None):
-        try:
-            return self.device.attributes[name]
-        except KeyError:
-            return default
+        return self.device.attributes.get(name, default)
 
     def refresh(self):
         """

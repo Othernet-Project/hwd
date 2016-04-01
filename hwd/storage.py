@@ -63,12 +63,15 @@ class Mountable(object):
         filesystems that are mounted.
         """
         try:
-            mp = self.mount_points[0]
+            # Always use the last mount point because it's a very common
+            # situation when mount points are moved, or sotorage is
+            # double-mounted. Last mount point is always the newest.
+            mp = self.mount_points[-1]
         except IndexError:
             return None
         stat = os.statvfs(mp)
         free = stat.f_frsize * stat.f_bavail
-        total = self.size
+        total = stat.f_frsize * stat.f_blocks
         used = total - free
         used_pct = round(used / total * 100)
         free_pct = 100 - used_pct
@@ -91,6 +94,8 @@ class PartitionBase(Mountable, wrapper.Wrapper):
 
     @property
     def disk(self):
+        if not self.parent_class or not self.device.parent:
+            return
         if not self._disk:
             self._disk = self.parent_class(self.device.parent)
         return self._disk
