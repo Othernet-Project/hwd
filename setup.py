@@ -16,6 +16,7 @@ setup(
     version=VERSION,
     license='GPLv3',
     packages=[pkg.__name__],
+    url='https://github.com/Outernet-Project/hwd',
     include_package_data=True,
     long_description=read('README.rst'),
     install_requires=[
