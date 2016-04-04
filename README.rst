@@ -10,4 +10,6 @@ tested on any other platform.
 
 See ``examples`` directory for some usage examples.
 
+Documentation is available `on Read The Docs <http://hwd.readthedocs.org/>`_.
+
 .. _Librarian: https://github.com/Outernet-Project/librarian/
